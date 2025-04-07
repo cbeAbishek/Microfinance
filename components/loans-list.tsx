@@ -2,11 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { ethers } from "ethers"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { useToast } from "@/hooks/use-toast"
-import { getMicrofinanceContract } from "@/lib/contract"
+
+declare let window: any
 
 interface Loan {
   id: number
@@ -24,18 +21,31 @@ interface LoansListProps {
 export function LoansList({ account }: LoansListProps) {
   const [loans, setLoans] = useState<Loan[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const { toast } = useToast()
+  const [message, setMessage] = useState("")
 
   useEffect(() => {
-    fetchLoans()
+    if (account) {
+      fetchLoans()
+    }
   }, [account])
+
+  async function getMicrofinanceContract() {
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    const signer = await provider.getSigner()
+    const contractAddress = "0xYourContractAddressHere" // Replace with your contract address
+    const abi = [ 
+      // Add relevant contract ABI functions used below
+      "function getUserLoanCount(address user) view returns (uint256)",
+      "function getUserLoanAtIndex(address user, uint256 index) view returns (tuple(uint256 amount, uint256 duration, string purpose, uint8 status, uint256 dueDate))",
+      "function repayLoan(uint256 loanId) public",
+    ]
+    return new ethers.Contract(contractAddress, abi, signer)
+  }
 
   async function fetchLoans() {
     try {
       setIsLoading(true)
       const contract = await getMicrofinanceContract()
-
-      // This is a placeholder - the actual implementation would depend on your contract
       const loanCount = await contract.getUserLoanCount(account)
       const loanPromises = []
 
@@ -45,23 +55,19 @@ export function LoansList({ account }: LoansListProps) {
 
       const loanResults = await Promise.all(loanPromises)
 
-      const formattedLoans = loanResults.map((loan, index) => ({
+      const formattedLoans = loanResults.map((loan: any, index: number) => ({
         id: index,
-        amount: ethers.formatEther(loan.amount),
-        duration: loan.duration.toNumber(),
-        purpose: loan.purpose,
-        status: getLoanStatus(loan.status),
-        dueDate: loan.dueDate ? new Date(loan.dueDate.toNumber() * 1000) : null,
+        amount: ethers.formatEther(loan[0]),
+        duration: Number(loan[1]),
+        purpose: loan[2],
+        status: getLoanStatus(Number(loan[3])),
+        dueDate: loan[4] ? new Date(Number(loan[4]) * 1000) : null,
       }))
 
       setLoans(formattedLoans)
     } catch (error) {
       console.error("Error fetching loans:", error)
-      toast({
-        title: "Failed to Load Loans",
-        description: "There was an error loading your loans",
-        variant: "destructive",
-      })
+      setMessage("Error loading your loans")
     } finally {
       setIsLoading(false)
     }
@@ -69,82 +75,65 @@ export function LoansList({ account }: LoansListProps) {
 
   function getLoanStatus(statusCode: number): "Pending" | "Approved" | "Repaid" | "Rejected" {
     const statuses = ["Pending", "Approved", "Repaid", "Rejected"]
-    return statuses[statusCode] as any
+    return statuses[statusCode] as "Pending" | "Approved" | "Repaid" | "Rejected"
   }
 
   async function handleRepay(loanId: number) {
     try {
+      setMessage("Processing repayment...")
       const contract = await getMicrofinanceContract()
       const tx = await contract.repayLoan(loanId)
-
-      toast({
-        title: "Repayment Submitted",
-        description: "Your loan repayment is being processed",
-      })
-
       await tx.wait()
-
-      toast({
-        title: "Repayment Confirmed",
-        description: "Your loan has been repaid successfully",
-      })
-
+      setMessage("Loan repaid successfully.")
       fetchLoans()
     } catch (error) {
       console.error("Error repaying loan:", error)
-      toast({
-        title: "Transaction Failed",
-        description: "Failed to repay loan",
-        variant: "destructive",
-      })
+      setMessage("Failed to repay loan.")
     }
-  }
-
-  if (isLoading) {
-    return <div>Loading your loans...</div>
-  }
-
-  if (loans.length === 0) {
-    return <div>You don't have any loans yet.</div>
   }
 
   return (
     <div className="space-y-4">
-      {loans.map((loan) => (
-        <Card key={loan.id}>
-          <CardHeader className="pb-2">
+      {isLoading ? (
+        <p className="text-gray-600">Loading your loans...</p>
+      ) : loans.length === 0 ? (
+        <p className="text-gray-600">You don't have any loans yet.</p>
+      ) : (
+        loans.map((loan) => (
+          <div key={loan.id} className="border rounded-lg shadow-sm p-4 bg-white">
             <div className="flex justify-between items-start">
-              <CardTitle className="text-lg">{loan.amount} ETH</CardTitle>
-              <Badge
-                variant={
+              <h3 className="text-lg font-semibold">{loan.amount} ETH</h3>
+              <span
+                className={`px-2 py-1 text-sm rounded-full ${
                   loan.status === "Approved"
-                    ? "default"
+                    ? "bg-blue-100 text-blue-700"
                     : loan.status === "Repaid"
-                      ? "success"
-                      : loan.status === "Rejected"
-                        ? "destructive"
-                        : "secondary"
-                }
+                    ? "bg-green-100 text-green-700"
+                    : loan.status === "Rejected"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-gray-200 text-gray-700"
+                }`}
               >
                 {loan.status}
-              </Badge>
+              </span>
             </div>
-          </CardHeader>
-          <CardContent className="pb-2">
-            <p className="text-sm text-muted-foreground">{loan.purpose}</p>
-            <p className="text-sm mt-1">Duration: {loan.duration} days</p>
-            {loan.dueDate && <p className="text-sm mt-1">Due: {loan.dueDate.toLocaleDateString()}</p>}
-          </CardContent>
-          {loan.status === "Approved" && (
-            <CardFooter>
-              <Button onClick={() => handleRepay(loan.id)} className="w-full">
+            <p className="text-sm mt-2 text-gray-700">{loan.purpose}</p>
+            <p className="text-sm mt-1 text-gray-600">Duration: {loan.duration} days</p>
+            {loan.dueDate && (
+              <p className="text-sm mt-1 text-gray-600">Due: {loan.dueDate.toLocaleDateString()}</p>
+            )}
+            {loan.status === "Approved" && (
+              <button
+                onClick={() => handleRepay(loan.id)}
+                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition"
+              >
                 Repay Loan
-              </Button>
-            </CardFooter>
-          )}
-        </Card>
-      ))}
+              </button>
+            )}
+          </div>
+        ))
+      )}
+      {message && <p className="text-sm text-center text-gray-700">{message}</p>}
     </div>
   )
 }
-
