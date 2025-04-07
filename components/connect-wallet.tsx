@@ -2,8 +2,6 @@
 
 import { useState } from "react"
 import { ethers } from "ethers"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/hooks/use-toast"
 
 interface ConnectWalletProps {
   isConnected: boolean
@@ -13,20 +11,18 @@ interface ConnectWalletProps {
 
 export function ConnectWallet({ isConnected, account, onConnect }: ConnectWalletProps) {
   const [isConnecting, setIsConnecting] = useState(false)
-  const { toast } = useToast()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   async function connectWallet() {
     if (!window.ethereum) {
-      toast({
-        title: "MetaMask not found",
-        description: "Please install MetaMask to use this application",
-        variant: "destructive",
-      })
+      setErrorMessage("MetaMask not found. Please install MetaMask to use this application.")
       return
     }
 
     try {
       setIsConnecting(true)
+      setErrorMessage(null)
+
       const provider = new ethers.BrowserProvider(window.ethereum)
       await provider.send("eth_requestAccounts", [])
       const signer = await provider.getSigner()
@@ -34,28 +30,31 @@ export function ConnectWallet({ isConnected, account, onConnect }: ConnectWallet
       onConnect(address)
     } catch (error) {
       console.error("Error connecting wallet:", error)
-      toast({
-        title: "Connection Failed",
-        description: "Failed to connect to your wallet",
-        variant: "destructive",
-      })
+      setErrorMessage("Failed to connect to your wallet. Please try again.")
     } finally {
       setIsConnecting(false)
     }
   }
 
-  if (isConnected && account) {
-    return (
-      <Button variant="outline">
-        {account.slice(0, 6)}...{account.slice(-4)}
-      </Button>
-    )
-  }
-
   return (
-    <Button onClick={connectWallet} disabled={isConnecting}>
-      {isConnecting ? "Connecting..." : "Connect Wallet"}
-    </Button>
+    <div className="flex flex-col items-start gap-2">
+      {isConnected && account ? (
+        <button
+          disabled
+          className="bg-white border border-gray-300 text-gray-800 font-medium py-2 px-4 rounded shadow-sm cursor-default"
+        >
+          {account.slice(0, 6)}...{account.slice(-4)}
+        </button>
+      ) : (
+        <button
+          onClick={connectWallet}
+          disabled={isConnecting}
+          className="bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isConnecting ? "Connecting..." : "Connect Wallet"}
+        </button>
+      )}
+      {errorMessage && <p className="text-red-600 text-sm">{errorMessage}</p>}
+    </div>
   )
 }
-
