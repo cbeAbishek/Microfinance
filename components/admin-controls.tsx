@@ -45,7 +45,7 @@ export default function AdminControls() {
       {pendingLoans.map(loan => (
         <div key={loan.id} className="loan-request">
           <p>{ethers.formatEther(loan.amount)} ETH - {loan.purpose}</p>
-          <button onClick={() => approveLoan(loan.id)}>Approve</button>
+          <button onClick={() => approveLoan(loan.id)}>Approveing</button>
         </div>
       ))}
     </div>
