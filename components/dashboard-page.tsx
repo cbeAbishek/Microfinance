@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
+import { LoansList } from "./loans-list";
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 declare global {
   interface Window {
@@ -14,6 +17,11 @@ export default function DashboardPage() {
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const router = useRouter()
+
+  const handleLoanClick = () => {
+    router.push("/loan-request")
+  }
   useEffect(() => {
     checkConnection();
   }, []);
@@ -45,14 +53,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 bg-gradient-to-r from-blue-800 to-indigo-900 min-h-screen text-white">
       <div className="flex flex-col gap-8">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Microfinance Platform</h1>
           <button
-            className={`px-4 py-2 rounded ${
-              isConnected ? "bg-green-500 text-white" : "bg-blue-500 text-white"
-            }`}
+            className={`px-4 py-2 rounded ${isConnected ? "bg-green-500 text-white" : "bg-blue-500 text-white"
+              }`}
             onClick={async () => {
               if (window.ethereum) {
                 const provider = new ethers.BrowserProvider(window.ethereum);
@@ -83,21 +90,14 @@ export default function DashboardPage() {
                   Fill out the form to request a new microloan
                 </p>
                 {/* Loan request form goes here */}
-                <form>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium mb-1">
-                      Loan Amount
-                    </label>
-                    <input
-                      type="number"
-                      className="w-full px-3 py-2 border rounded"
-                      placeholder="Enter amount"
-                    />
-                  </div>
-                  <button className="px-4 py-2 bg-blue-500 text-white rounded">
-                    Submit
-                  </button>
-                </form>
+
+                <Link href="/?popup=open">
+                  <button className="
+                  onClick={handleLoanClick}
+                  px-4 py-2 bg-blue-500 text-white rounded">
+                    Request a Loan
+                  </button></Link>
+
               </div>
 
               <div className="p-4 border rounded shadow">
@@ -105,30 +105,25 @@ export default function DashboardPage() {
                 <p className="mb-4">View and manage your current loans</p>
                 {/* Loans list goes here */}
                 <ul>
-                  <li className="mb-2">Loan #1 - $500 - Pending</li>
-                  <li className="mb-2">Loan #2 - $300 - Approved</li>
+                  <LoansList account={account} />
                 </ul>
               </div>
             </div>
           </>
         ) : (
-          <div className="p-4 border rounded shadow max-w-md mx-auto">
-            <h2 className="text-xl font-semibold mb-2">
+          <div className="p-6 border rounded-2xl shadow-lg max-w-md mx-auto mt-20 bg-white/10 backdrop-blur-md border-white/20 animate-fade-in transition-all duration-700">
+            <h2 className="text-2xl font-bold text-center text-white mb-3">
               Welcome to Microfinance Platform
             </h2>
-            <p className="mb-4 text-center">
-              This platform allows you to request and manage microloans on the
-              blockchain.
+            <p className="mb-6 text-center text-/80">
+              This platform allows you to request and manage microloans on the blockchain.
             </p>
             <button
-              className="px-4 py-2 bg-blue-500 text-white rounded"
+              className="w-full px-5 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-indigo-600 hover:to-blue-500 text-white rounded-xl font-semibold transition-transform duration-300 transform hover:scale-105"
               onClick={async () => {
                 if (window.ethereum) {
                   const provider = new ethers.BrowserProvider(window.ethereum);
-                  const accounts = await provider.send(
-                    "eth_requestAccounts",
-                    []
-                  );
+                  const accounts = await provider.send("eth_requestAccounts", []);
                   setAccount(accounts[0]);
                   setIsConnected(true);
                 }
@@ -137,6 +132,7 @@ export default function DashboardPage() {
               Connect Wallet
             </button>
           </div>
+
         )}
       </div>
     </div>

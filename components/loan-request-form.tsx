@@ -19,7 +19,7 @@ export function LoanRequestForm({ account }: LoanRequestFormProps) {
     // Replace this with actual provider and signer logic
     const provider = new ethers.BrowserProvider(window.ethereum)
     const signer = await provider.getSigner()
-    const contractAddress = "0xYourContractAddress"
+    const contractAddress = "0x5eFd57C010b974F05CBEB2c69703c97A4Fb45F28"
     const abi = [
       "function requestLoan(uint256 amount, uint256 duration, string calldata purpose) external"
     ]
@@ -27,37 +27,48 @@ export function LoanRequestForm({ account }: LoanRequestFormProps) {
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setMessage(null)
+    e.preventDefault();
+    setMessage(null); // Clear any previous messages
 
     if (!amount || !purpose || !duration) {
-      setMessage({ type: "error", text: "Please fill out all fields" })
-      return
+      setMessage({ type: "error", text: "Please fill out all fields." });
+      return;
+    }
+
+    if (isNaN(Number(amount)) || Number(amount) <= 0) {
+      setMessage({ type: "error", text: "Please enter a valid loan amount greater than 0." });
+      return;
+    }
+
+    if (isNaN(Number(duration)) || Number(duration) <= 0 || Number(duration) > 365) {
+      setMessage({ type: "error", text: "Please enter a valid duration between 1 and 365 days." });
+      return;
     }
 
     try {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
 
-      const amountInWei = ethers.parseEther(amount)
-      const durationInDays = parseInt(duration)
+      const amountInWei = ethers.parseEther(amount); // Convert ETH to Wei
+      const durationInDays = parseInt(duration);
 
-      const contract = await getMicrofinanceContract()
-      const tx = await contract.requestLoan(amountInWei, durationInDays, purpose)
+      const contract = await getMicrofinanceContract();
+      const tx = await contract.requestLoan(amountInWei, durationInDays, purpose);
 
-      setMessage({ type: "success", text: "Submitting your loan request..." })
+      setMessage({ type: "success", text: "Submitting your loan request..." });
 
-      await tx.wait()
+      await tx.wait(); // Wait for the transaction to be mined
 
-      setMessage({ type: "success", text: "Loan request confirmed on the blockchain." })
+      setMessage({ type: "success", text: "Loan request confirmed on the blockchain." });
 
-      setAmount("")
-      setPurpose("")
-      setDuration("30")
+      // Reset form fields
+      setAmount("");
+      setPurpose("");
+      setDuration("30");
     } catch (error) {
-      console.error("Error submitting loan request:", error)
-      setMessage({ type: "error", text: "Failed to submit loan request." })
+      console.error("Error submitting loan request:", error);
+      setMessage({ type: "error", text: "Failed to submit loan request. Please try again." });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false); // Ensure the submit button is re-enabled
     }
   }
 

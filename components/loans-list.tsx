@@ -32,7 +32,7 @@ export function LoansList({ account }: LoansListProps) {
   async function getMicrofinanceContract() {
     const provider = new ethers.BrowserProvider(window.ethereum)
     const signer = await provider.getSigner()
-    const contractAddress = "0xYourContractAddressHere" // Replace with your contract address
+    const contractAddress = "0x5eFd57C010b974F05CBEB2c69703c97A4Fb45F28" // Replace with your contract address
     const abi = [ 
       // Add relevant contract ABI functions used below
       "function getUserLoanCount(address user) view returns (uint256)",
@@ -44,16 +44,23 @@ export function LoansList({ account }: LoansListProps) {
 
   async function fetchLoans() {
     try {
-      setIsLoading(true)
-      const contract = await getMicrofinanceContract()
-      const loanCount = await contract.getUserLoanCount(account)
-      const loanPromises = []
+      setIsLoading(true);
+      setMessage(""); // Clear any previous messages
+      const contract = await getMicrofinanceContract();
+      const loanCount = Number(await contract.getUserLoanCount(account)); // Ensure loanCount is a number
 
-      for (let i = 0; i < loanCount; i++) {
-        loanPromises.push(contract.getUserLoanAtIndex(account, i))
+      if (loanCount === 0) {
+        setLoans([]); // No loans to display
+        setMessage("You don't have any loans yet.");
+        return;
       }
 
-      const loanResults = await Promise.all(loanPromises)
+      const loanPromises = [];
+      for (let i = 0; i < loanCount; i++) {
+        loanPromises.push(contract.getUserLoanAtIndex(account, i));
+      }
+
+      const loanResults = await Promise.all(loanPromises);
 
       const formattedLoans = loanResults.map((loan: any, index: number) => ({
         id: index,
@@ -62,14 +69,14 @@ export function LoansList({ account }: LoansListProps) {
         purpose: loan[2],
         status: getLoanStatus(Number(loan[3])),
         dueDate: loan[4] ? new Date(Number(loan[4]) * 1000) : null,
-      }))
+      }));
 
-      setLoans(formattedLoans)
+      setLoans(formattedLoans);
     } catch (error) {
-      console.error("Error fetching loans:", error)
-      setMessage("Error loading your loans")
+      console.error("Error fetching loans:", error);
+      setMessage("Error loading your loans. Please try again.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false); // Ensure loading state is updated
     }
   }
 
@@ -95,9 +102,9 @@ export function LoansList({ account }: LoansListProps) {
   return (
     <div className="space-y-4">
       {isLoading ? (
-        <p className="text-gray-600">Loading your loans...</p>
+        <p className="text-gray-100">Loading your loans...</p>
       ) : loans.length === 0 ? (
-        <p className="text-gray-600">You don't have any loans yet.</p>
+        <p className="text-gray-100">You don't have any loans yet.</p>
       ) : (
         loans.map((loan) => (
           <div key={loan.id} className="border rounded-lg shadow-sm p-4 bg-white">
