@@ -33,6 +33,31 @@ export default function LoansList() {
     fetchLoans();
   }, []);
 
+  async function repayLoan(index: number): Promise<void> {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(
+        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!,
+        MicrofinanceABI.abi,
+        signer
+      );
+
+      const loan = loans[index];
+      const tx = await contract.repayLoan(index, { value: loan.amount });
+      await tx.wait();
+
+      alert('Loan repaid successfully!');
+      // Optionally, refresh the loans list
+      const updatedLoans = [...loans];
+      updatedLoans[index].status = 2; // Update status to "Repaid"
+      setLoans(updatedLoans);
+    } catch (error) {
+      console.error('Error repaying loan:', error);
+      alert('Failed to repay the loan. Please try again.');
+    }
+  }
+
   return (
     <div className="loans-list">
       {loans.map((loan, index) => (

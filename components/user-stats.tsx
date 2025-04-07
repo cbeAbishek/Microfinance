@@ -22,7 +22,7 @@ export function UserStats({ account }: UserStatsProps) {
   async function getMicrofinanceContract() {
     const provider = new ethers.BrowserProvider(window.ethereum)
     const signer = await provider.getSigner()
-    const contractAddress = "0xYourContractAddress" // Replace with your actual contract address
+    const contractAddress = "0x5eFd57C010b974F05CBEB2c69703c97A4Fb45F28" // Replace with your actual contract address
     const abi = [
       "function getUserLoanCount(address user) view returns (uint256)",
       "function getUserCreditScore(address user) view returns (uint256)"
