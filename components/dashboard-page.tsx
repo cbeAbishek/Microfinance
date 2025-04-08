@@ -1,11 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { UserStats } from "./user-stats";
+import { useState, useEffect } from "react";
 import LoanRequestForm from "./loan-request-form";
-import LoansList from "./loans-list";
-import { toast } from "react-hot-toast";
-
+import Navbar from "./Navbar";
 declare global {
   interface Window {
     ethereum?: any;
@@ -98,31 +95,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-bl from-[#0f172a] via-[#1e1a78] to-[#0f172a]">
-      {!isConnected ? (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">Welcome to MicroFinance</h1>
-            <p className="text-gray-600 mb-6">Connect your wallet to start managing your loans</p>
-            <button
-              onClick={connectWallet}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Connect Wallet
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="container mx-auto px-4 py-8">
-          <UserStats account={account} />
-          <div className="mt-8">
-            <LoanRequestForm />
-          </div>
-          <div className="mt-8">
-            <LoansList account={account} />
-          </div>
-        </div>
-      )}
+    <div className="dashboard bg-gradient-to-bl from-[#0f172a] via-[#1e1a78] to-[#0f172a]">
+      <Navbar />
+      <LoanRequestForm />
     </div>
   );
 }

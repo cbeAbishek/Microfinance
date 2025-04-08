@@ -107,32 +107,42 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden md:flex space-x-6 items-center">
             <a
-              href="#"
+              href="/"
               className="text-gray-700 hover:text-blue-600 transition"
             >
-              Dashboard
+              Home
             </a>
             <a
-              href="#"
+              href="/Loan"
               className="text-gray-700 hover:text-blue-600 transition"
             >
               Loans
             </a>
             <a
-              href="#"
+              href="/Profile"
               className="text-gray-700 hover:text-blue-600 transition"
             >
               Profile
             </a>
+            <a
+              href="/Profile"
+              className="text-gray-700 hover:text-blue-600 transition"
+            >
+              {isConnected
+                ? ` ${account?.slice(0, 6)}...${account?.slice(-4)}`
+                : ""}
+            </a>
+            <a href="/Lender">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+              Lender Login
+            </button></a>
             <button
               className={`bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition ${
                 isConnected ? "bg-blue-800" : ""
               }`}
               onClick={connectWallet}
             >
-              {isConnected
-                ? `Connected: ${account?.slice(0, 6)}...${account?.slice(-4)}`
-                : "Connect Wallet"}
+              {isConnected ? `Connected` : "Connect Wallet"}
             </button>
           </div>
 
@@ -168,6 +178,46 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="md:hidden bg-white border-t border-gray-100 shadow-md">
+          <div className="px-4 pt-2 pb-4 space-y-2">
+            <a
+              href="/"
+              className="block text-gray-700 hover:text-blue-600 transition"
+            >
+              Home
+            </a>
+            <a
+              href="/Loan"
+              className="block text-gray-700 hover:text-blue-600 transition"
+            >
+              Loans
+            </a>
+            <a
+              href="/Profile"
+              className="block text-gray-700 hover:text-blue-600 transition"
+            >
+              Profile
+            </a>
+            <a
+              href="/Profile"
+              className="text-gray-700 hover:text-blue-600 transition"
+            >
+              {isConnected
+                ? ` ${account?.slice(0, 6)}...${account?.slice(-4)}`
+                : ""}
+            </a>
+            <button
+              className="w-full bg-blue-600 text-white py-2 rounded-lg mt-2 hover:bg-blue-700 transition"
+              onClick={connectWallet}
+            >
+              {isConnected ? `Connected` : "Connect Wallet"}
+            </button>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

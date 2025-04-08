@@ -1,8 +1,7 @@
-"use client";
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
-import Microfinance from "../contracts/Microfinance.json";
+import { dummyLoans } from "./dummyLoans"; // Import dummy data
 
 interface LoansListProps {
   account: string | null;
@@ -24,43 +23,15 @@ export default function LoansList({ account }: LoansListProps) {
 
   useEffect(() => {
     if (account) {
-      fetchUserLoans();
+      // Use dummy data instead of fetching from the contract
+      setTimeout(() => {
+        setLoans(dummyLoans);
+        setIsLoading(false);
+      }, 1000); // Simulate a 1-second loading delay
     } else {
       setIsLoading(false);
     }
   }, [account]);
-
-  const fetchUserLoans = async () => {
-    try {
-      if (!window.ethereum || !account) return;
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const contract = new ethers.Contract(
-        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!,
-        Microfinance.abi,
-        provider
-      );
-
-      const loanCount = await contract.getUserLoanCount(account);
-      const userLoans: Loan[] = [];
-
-      for (let i = 0; i < Number(loanCount); i++) {
-        const loan = await contract.getUserLoanAtIndex(account, i);
-        userLoans.push({
-          ...loan,
-          id: i,
-          amount: loan.amount
-        });
-      }
-
-      setLoans(userLoans);
-    } catch (err) {
-      console.error("Error fetching user loans:", err);
-      toast.error("Failed to fetch your loans");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const getLoanStatus = (status: number) => {
     switch (status) {
@@ -116,7 +87,6 @@ export default function LoansList({ account }: LoansListProps) {
                     {ethers.formatEther(loan.amount)} ETH
                   </p>
                 </div>
-                
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">Duration</h3>
                   <p className="text-lg font-semibold text-gray-900">

@@ -26,26 +26,6 @@ export default function Home() {
   return (
     <div className="relative min-h-screen">
       <DashboardPage />
-
-      {/* <button
-        onClick={openPopup}
-        className="fixed bottom-5 right-5 bg-blue-600 text-white px-4 py-2 rounded shadow-md"
-      >
-        Open Popup
-      </button>
-
-      {isPopupOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-xl relative">
-            <button
-              className="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl"
-              onClick={closePopup}
-            >
-              &times;
-            </button>
-          </div>
-        </div>
-      )} */}
     </div>
   )
 }
