@@ -1,10 +1,8 @@
 "use client";
-import LoanRequestForm from "./loan-request-form";
-import LoansList from "./loans-list";
-import { UserStats } from "./user-stats";
-import Navbar from "./Navbar";
 import { ethers } from "ethers";
 import { useState, useEffect } from "react";
+import LoanRequestForm from "./loan-request-form";
+import Navbar from "./Navbar";
 declare global {
   interface Window {
     ethereum?: any;
@@ -60,12 +58,7 @@ export default function Dashboard() {
   return (
     <div className="dashboard bg-gradient-to-bl from-[#0f172a] via-[#1e1a78] to-[#0f172a]">
       <Navbar />
-      <br />
-      <br />
-      <br />
-      <UserStats account={getAccount()} />
       <LoanRequestForm />
-      <LoansList />
     </div>
   );
 }

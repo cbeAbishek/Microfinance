@@ -107,10 +107,10 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden md:flex space-x-6 items-center">
             <a
-              href="#"
+              href="/"
               className="text-gray-700 hover:text-blue-600 transition"
             >
-              Dashboard
+              Home
             </a>
             <a
               href="#"
@@ -124,6 +124,14 @@ export default function Navbar() {
             >
               Profile
             </a>
+            <a
+              href="/Profile"
+              className="text-gray-700 hover:text-blue-600 transition"
+            >
+              {isConnected
+                ? ` ${account?.slice(0, 6)}...${account?.slice(-4)}`
+                : ""}
+            </a>
             <button
               className={`bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition ${
                 isConnected ? "bg-blue-800" : ""
@@ -131,9 +139,10 @@ export default function Navbar() {
               onClick={connectWallet}
             >
               {isConnected
-                ? `Connected: ${account?.slice(0, 6)}...${account?.slice(-4)}`
+                ? `Connected`
                 : "Connect Wallet"}
             </button>
+            
           </div>
 
           {/* Mobile Hamburger */}
