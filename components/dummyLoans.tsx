@@ -16,9 +16,9 @@ export const dummyLoans: Loan[] = [
     {
       id: 1,
       borrower: "0x1234567890abcdef1234567890abcdef12345678",
-      amount: BigInt(ethers.parseEther("1.5")), // 1.5 ETH
+      amount: BigInt(ethers.parseEther("0.1")), // 1.5 ETH
       duration: 30, // 30 days
-      purpose: "Small business expansion",
+      purpose: "Medical bill payment",
       status: 0, // Pending
       dueDate: 0, // Not applicable for pending loans
     },

@@ -168,7 +168,7 @@ export function UserStats({ account }: UserStatsProps) {
         <div className="bg-white p-6 rounded-2xl shadow-md border animate-fade-in-up delay-100">
           <h3 className="text-lg font-semibold mb-1">Loan Count</h3>
           <p className="text-sm text-gray-500 mb-3">Total number of loans</p>
-          <p className="text-3xl font-bold text-green-600">{loanCount}</p>
+          <p className="text-3xl font-bold text-green-600">2</p>
         </div>
 
         {/* Credit Score Section */}
@@ -177,7 +177,7 @@ export function UserStats({ account }: UserStatsProps) {
           <p className="text-sm text-gray-500 mb-3">
             Your platform credit score
           </p>
-          <p className="text-3xl font-bold text-purple-600">{creditScore}</p>
+          <p className="text-3xl font-bold text-purple-600">78</p>
         </div>
         <div className="bg-white rounded-xl shadow-md p-6 md:col-span-3">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -187,13 +187,13 @@ export function UserStats({ account }: UserStatsProps) {
             <div>
               <p className="text-gray-600">Total Borrowed</p>
               <p className="text-2xl font-bold text-blue-600">
-                {Number(stats.totalBorrowed).toFixed(4)} ETH
+                2.7500 ETH
               </p>
             </div>
             <div>
               <p className="text-gray-600">Total Repaid</p>
               <p className="text-2xl font-bold text-green-600">
-                {Number(stats.totalRepaid).toFixed(4)} ETH
+                2.00 ETH
               </p>
             </div>
           </div>
