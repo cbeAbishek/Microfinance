@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ethers } from "ethers";
+import { toast } from "react-hot-toast";
 
 declare global {
   interface Window {
@@ -9,134 +10,174 @@ declare global {
 }
 
 export default function LoanRequestForm() {
-  const [amount, setAmount] = useState("");
-  const [duration, setDuration] = useState("30");
-  const [purpose, setPurpose] = useState("");
-  const [message, setMessage] = useState<{
-    type: "error" | "success";
-    text: string;
-  } | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    amount: "",
+    duration: "30",
+    purpose: ""
+  });
 
-  async function getMicrofinanceContract() {
-    const provider = new ethers.BrowserProvider(window.ethereum);
-    const signer = await provider.getSigner();
-    const contractAddress = "0x5eFd57C010b974F05CBEB2c69703c97A4Fb45F28";
-    const abi = [
-      "function requestLoan(uint256 amount, uint256 duration, string calldata purpose) external",
-    ];
-    return new ethers.Contract(contractAddress, abi, signer);
-  }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage(null);
-
-    if (!amount || !purpose || !duration) {
-      setMessage({ type: "error", text: "Please fill out all fields." });
-      return;
-    }
-
-    if (isNaN(Number(amount)) || Number(amount) <= 0) {
-      setMessage({
-        type: "error",
-        text: "Please enter a valid loan amount greater than 0.",
-      });
-      return;
-    }
-
-    if (
-      isNaN(Number(duration)) ||
-      Number(duration) <= 0 ||
-      Number(duration) > 365
-    ) {
-      setMessage({
-        type: "error",
-        text: "Please enter a valid duration between 1 and 365 days.",
-      });
-      return;
-    }
+    setIsLoading(true);
 
     try {
-      setIsSubmitting(true);
-      const amountInWei = ethers.parseEther(amount);
-      const durationInDays = parseInt(duration);
+      if (!window.ethereum) {
+        throw new Error("Please install MetaMask to request loans");
+      }
 
-      const contract = await getMicrofinanceContract();
-      const tx = await contract.requestLoan(amountInWei, durationInDays, purpose);
+      // Validate inputs
+      if (!formData.amount || !formData.duration || !formData.purpose) {
+        throw new Error("Please fill in all fields");
+      }
 
-      setMessage({ type: "success", text: "Submitting your loan request..." });
+      if (parseFloat(formData.amount) <= 0) {
+        throw new Error("Amount must be greater than 0");
+      }
 
+      if (parseInt(formData.duration) <= 0) {
+        throw new Error("Duration must be greater than 0 days");
+      }
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(
+        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!,
+        require('../contracts/Microfinance.json').abi,
+        signer
+      );
+
+      // Convert amount to Wei
+      const amountInWei = ethers.parseEther(formData.amount);
+      const durationInDays = parseInt(formData.duration);
+
+      // Request the loan
+      const tx = await contract.requestLoan(
+        amountInWei,
+        durationInDays,
+        formData.purpose
+      );
+
+      toast.loading("Submitting loan request...");
       await tx.wait();
+      
+      toast.dismiss();
+      toast.success("Loan request submitted successfully!");
 
-      setMessage({
-        type: "success",
-        text: "Loan request confirmed on the blockchain.",
+      // Reset form
+      setFormData({
+        amount: "",
+        duration: "30",
+        purpose: ""
       });
 
-      setAmount("");
-      setPurpose("");
-      setDuration("30");
-    } catch (error) {
-      console.error("Error submitting loan request:", error);
-      setMessage({
-        type: "error",
-        text: "Failed to submit loan request. Please try again.",
-      });
+    } catch (err: any) {
+      console.error("Error requesting loan:", err);
+      toast.error(err.message || "Failed to submit loan request");
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Request a Loan</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="number"
-          placeholder="Amount (ETH)"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          disabled={isSubmitting}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="number"
-          placeholder="Duration (days)"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-          disabled={isSubmitting}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <textarea
-          placeholder="Loan purpose"
-          value={purpose}
-          onChange={(e) => setPurpose(e.target.value)}
-          disabled={isSubmitting}
-          rows={4}
-          className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className={`w-full py-3 px-6 rounded-lg text-white font-semibold transition ${
-            isSubmitting
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-          }`}
-        >
-          {isSubmitting ? "Submitting..." : "Request Loan"}
-        </button>
+    <div className="bg-white rounded-xl shadow-md p-6">
+      <h2 className="text-xl font-semibold text-gray-800 mb-6">Request a Loan</h2>
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Amount Input */}
+        <div>
+          <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
+            Loan Amount (ETH)
+          </label>
+          <div className="mt-1 relative rounded-md shadow-sm">
+            <input
+              type="number"
+              name="amount"
+              id="amount"
+              step="0.01"
+              min="0"
+              value={formData.amount}
+              onChange={handleChange}
+              className="block w-full pr-12 sm:text-sm border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              placeholder="0.00"
+              required
+            />
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <span className="text-gray-500 sm:text-sm">ETH</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Duration Input */}
+        <div>
+          <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-2">
+            Loan Duration
+          </label>
+          <select
+            name="duration"
+            id="duration"
+            value={formData.duration}
+            onChange={handleChange}
+            className="block w-full sm:text-sm border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+            required
+          >
+            <option value="30">30 Days</option>
+            <option value="60">60 Days</option>
+            <option value="90">90 Days</option>
+            <option value="180">180 Days</option>
+          </select>
+        </div>
+
+        {/* Purpose Input */}
+        <div>
+          <label htmlFor="purpose" className="block text-sm font-medium text-gray-700 mb-2">
+            Loan Purpose
+          </label>
+          <textarea
+            name="purpose"
+            id="purpose"
+            value={formData.purpose}
+            onChange={handleChange}
+            rows={3}
+            className="block w-full sm:text-sm border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+            placeholder="Describe the purpose of your loan..."
+            required
+          />
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`
+              px-4 py-2 rounded-lg text-white font-medium
+              ${isLoading 
+                ? 'bg-blue-400 cursor-not-allowed' 
+                : 'bg-blue-600 hover:bg-blue-700'}
+              transition-colors
+              flex items-center space-x-2
+            `}
+          >
+            {isLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                <span>Submitting...</span>
+              </>
+            ) : (
+              'Request Loan'
+            )}
+          </button>
+        </div>
       </form>
-      {message && (
-        <p
-          className={`mt-4 text-center font-medium ${
-            message.type === "error" ? "text-red-500" : "text-green-600"
-          }`}
-        >
-          {message.text}
-        </p>
-      )}
     </div>
   );
 }
