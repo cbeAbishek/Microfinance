@@ -117,6 +117,12 @@ export default function LoansList({ account }: LoansListProps) {
                   </p>
                 </div>
                 <div>
+                  <h3 className="text-sm font-medium text-gray-500">Borrower</h3>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {loan.borrower}
+                  </p>
+                </div>
+                <div>
                   <h3 className="text-sm font-medium text-gray-500">Duration</h3>
                   <p className="text-lg font-semibold text-gray-900">
                     {loan.duration} days
