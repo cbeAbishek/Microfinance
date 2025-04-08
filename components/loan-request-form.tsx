@@ -433,36 +433,113 @@ export default function LoanRequestForm() {
             </div>
           </section>
         </section>
-        
+
         {/* Value Proposition */}
-        <section className="py-20 px-10 text-center bg-gray-50 animate-slide-up">
-          <h2 className="text-4xl font-bold mb-6">Why Choose Our Platform?</h2>
-          <p className="max-w-3xl mx-auto text-lg text-gray-600">
-            We bring the power of blockchain to microfinance—ensuring fairness,
-            transparency, and access for underserved communities globally.
-          </p>
+        <section className="py-20 px-10 bg-gray-50 animate-fade-in-up">
+          <div className="max-w-6xl mx-auto text-center">
+            <h2 className="text-4xl font-bold text-gray-800 mb-6">
+              Why Choose Our Platform?
+            </h2>
+            <p className="max-w-3xl mx-auto text-lg text-gray-600 mb-12">
+              We leverage blockchain technology to revolutionize
+              microfinance—offering fairness, transparency, and access to
+              underserved communities globally.
+            </p>
+
+            {/* Features Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Feature 1 */}
+              <div className="bg-white shadow-lg rounded-2xl p-8 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
+                <div className="flex justify-center items-center w-16 h-16 mx-auto rounded-full bg-blue-500 text-white text-3xl font-bold mb-6">
+                  ✓
+                </div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                  Decentralized & Transparent
+                </h3>
+                <p className="text-gray-600">
+                  All transactions are recorded on the blockchain, ensuring
+                  complete transparency and immutability.
+                </p>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="bg-white shadow-lg rounded-2xl p-8 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
+                <div className="flex justify-center items-center w-16 h-16 mx-auto rounded-full bg-green-500 text-white text-3xl font-bold mb-6">
+                  ✓
+                </div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                  Lower Fees & Faster Processing
+                </h3>
+                <p className="text-gray-600">
+                  Eliminate intermediaries and enjoy lower fees with instant
+                  loan approvals and fund transfers.
+                </p>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="bg-white shadow-lg rounded-2xl p-8 transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
+                <div className="flex justify-center items-center w-16 h-16 mx-auto rounded-full bg-indigo-500 text-white text-3xl font-bold mb-6">
+                  ✓
+                </div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                  Empowering Communities
+                </h3>
+                <p className="text-gray-600">
+                  Provide access to financial services for underserved
+                  communities, fostering economic growth and inclusion.
+                </p>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* How It Works */}
-        <section className="py-20 px-10 animate-fade-in-up">
-          <h2 className="text-3xl font-bold text-center mb-10">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {["Request Loan", "Community Voting", "Receive Funds"].map(
-              (step, index) => (
-                <div
-                  key={index}
-                  className="bg-white shadow-lg rounded-2xl p-6 text-center transition transform hover:-translate-y-1 hover:shadow-xl"
-                >
-                  <div className="text-5xl font-bold text-blue-500 mb-4">
-                    {index + 1}
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">{step}</h3>
-                  <p className="text-gray-600">
-                    {step} with complete transparency and zero intermediaries.
-                  </p>
-                </div>
-              )
-            )}
+        <section className="py-20 px-10 bg-gray-50 animate-fade-in-up">
+          <h2 className="text-4xl font-bold text-center text-gray-800 mb-12">
+            How It Works
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Step 1 */}
+            <div className="bg-white shadow-lg rounded-2xl p-8 text-center transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
+              <div className="flex justify-center items-center w-16 h-16 mx-auto rounded-full bg-blue-500 text-white text-3xl font-bold mb-6">
+                1
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                Request a Loan
+              </h3>
+              <p className="text-gray-600">
+                Submit your loan request in minutes. Our decentralized platform
+                ensures transparency and fairness.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="bg-white shadow-lg rounded-2xl p-8 text-center transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
+              <div className="flex justify-center items-center w-16 h-16 mx-auto rounded-full bg-green-500 text-white text-3xl font-bold mb-6">
+                2
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                Community Voting
+              </h3>
+              <p className="text-gray-600">
+                Your loan request is reviewed by the community. Decentralized
+                governance ensures fair decision-making.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="bg-white shadow-lg rounded-2xl p-8 text-center transition-all duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
+              <div className="flex justify-center items-center w-16 h-16 mx-auto rounded-full bg-indigo-500 text-white text-3xl font-bold mb-6">
+                3
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                Receive Funds
+              </h3>
+              <p className="text-gray-600">
+                Once approved, funds are transferred instantly via blockchain.
+                No intermediaries, no delays.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -506,14 +583,79 @@ export default function LoanRequestForm() {
         </section>
 
         {/* Security and Trust */}
-        <section className="py-20 px-10 bg-gray-100 animate-fade-in-up">
-          <h2 className="text-3xl font-bold text-center mb-10">
-            Security and Trust
-          </h2>
-          <p className="max-w-3xl mx-auto text-center text-gray-700">
-            Built with industry-standard smart contracts and audited systems to
-            ensure your funds and data are always safe.
-          </p>
+        <section className="py-20 px-6 sm:px-10 lg:px-24 bg-gray-100 animate-fade-in-up">
+          <div className="max-w-6xl mx-auto text-center">
+            <h2 className="text-4xl font-extrabold text-gray-900 mb-6">
+              Security and Trust
+            </h2>
+            <p className="text-lg text-gray-600 mb-12 max-w-3xl mx-auto">
+              Your security is our top priority. We use blockchain’s inherent
+              transparency and industry best practices to protect your assets,
+              identity, and data.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Security Item */}
+            <div className="bg-white p-6 rounded-2xl shadow-lg transition-transform hover:-translate-y-1 duration-300">
+              <div className="text-blue-600 text-4xl mb-4">🔐</div>
+              <h3 className="text-xl font-bold mb-2">Smart Contract Safety</h3>
+              <p className="text-gray-600">
+                All financial operations are handled through immutable smart
+                contracts with strict checks and balances.
+              </p>
+            </div>
+
+            {/* Audit */}
+            <div className="bg-white p-6 rounded-2xl shadow-lg transition-transform hover:-translate-y-1 duration-300">
+              <div className="text-blue-600 text-4xl mb-4">📋</div>
+              <h3 className="text-xl font-bold mb-2">Third-Party Audits</h3>
+              <p className="text-gray-600">
+                Our contracts are regularly audited by reputable firms to ensure
+                zero vulnerabilities and maximum reliability.
+              </p>
+            </div>
+
+            {/* Transparency */}
+            <div className="bg-white p-6 rounded-2xl shadow-lg transition-transform hover:-translate-y-1 duration-300">
+              <div className="text-blue-600 text-4xl mb-4">🌐</div>
+              <h3 className="text-xl font-bold mb-2">On-Chain Transparency</h3>
+              <p className="text-gray-600">
+                All transactions are publicly verifiable on the blockchain,
+                eliminating any chances of fraud or manipulation.
+              </p>
+            </div>
+
+            {/* Data Protection */}
+            <div className="bg-white p-6 rounded-2xl shadow-lg transition-transform hover:-translate-y-1 duration-300">
+              <div className="text-blue-600 text-4xl mb-4">🔒</div>
+              <h3 className="text-xl font-bold mb-2">Data Privacy</h3>
+              <p className="text-gray-600">
+                We use end-to-end encryption and decentralized identity methods
+                to protect your personal information.
+              </p>
+            </div>
+
+            {/* Multi-Sig Wallets */}
+            <div className="bg-white p-6 rounded-2xl shadow-lg transition-transform hover:-translate-y-1 duration-300">
+              <div className="text-blue-600 text-4xl mb-4">👥</div>
+              <h3 className="text-xl font-bold mb-2">Multi-Sig Wallets</h3>
+              <p className="text-gray-600">
+                Platform funds are managed through multi-signature wallets to
+                prevent single-point failures.
+              </p>
+            </div>
+
+            {/* 24/7 Monitoring */}
+            <div className="bg-white p-6 rounded-2xl shadow-lg transition-transform hover:-translate-y-1 duration-300">
+              <div className="text-blue-600 text-4xl mb-4">🛡️</div>
+              <h3 className="text-xl font-bold mb-2">24/7 Monitoring</h3>
+              <p className="text-gray-600">
+                Our systems are monitored continuously for unusual activity to
+                catch threats before they escalate.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* Pricing */}
