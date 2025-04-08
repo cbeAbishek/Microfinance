@@ -119,7 +119,7 @@ export default function Navbar() {
               Loans
             </a>
             <a
-              href="#"
+              href="/Profile"
               className="text-gray-700 hover:text-blue-600 transition"
             >
               Profile
