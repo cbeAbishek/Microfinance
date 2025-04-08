@@ -31,8 +31,8 @@ A full-stack decentralized application (DApp) built to revolutionize microfinanc
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/decentralized-microfinance-platform.git
-cd decentralized-microfinance-platform
+git clone https://github.com/cbeAbishek/Microfinance.git
+cd Microfinance
 ```
 
 ### 2️⃣ Create `.env` File
@@ -78,13 +78,20 @@ Visit your DApp at [http://localhost:3000](http://localhost:3000)
 
 ## 🖼️ Preview
 
-> Add preview images here like screenshots or gif walkthroughs
+> Add preview images here like screenshots
+> Landing page
+![landing page](https://github.com/user-attachments/assets/c86ca06a-92a3-4551-9a02-5404165b728b)
+> Profile
+![profile page](https://github.com/user-attachments/assets/4b5da267-54ca-4dd4-a13d-e6509815ffc5)
+> Lender Panel
+![Lender panel](https://github.com/user-attachments/assets/acea95b5-8ee9-4b90-b5ed-f41108c15d99)
 
 ---
 
 ## 📄 Project Docs
 
-- 📌 [Features, Benefits, Challenges & Solutions Presentation (PDF)]
+- 📌 [Features, Benefits, Challenges & Solutions Presentation (PDF)][Decentralized Microfinance Platform.pdf](https://github.com/user-attachments/files/19654764/Decentralized.Microfinance.Platform.pdf)
+
 
 ---
 
