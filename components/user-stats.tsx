@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
 
+// Props interface for the UserStats component
 interface UserStatsProps {
   account: string; // Wallet address of the user
 }
@@ -28,8 +29,6 @@ export function UserStats({ account }: UserStatsProps) {
   useEffect(() => {
     if (account) {
       fetchUserStats();
-    } else {
-      setIsLoading(false);
     }
   }, [account]);
 
@@ -69,14 +68,16 @@ export function UserStats({ account }: UserStatsProps) {
   // Function to get the microfinance contract instance
   async function getMicrofinanceContract() {
     try {
-      if (!window.ethereum || !account) return;
-
+      // Connect to Ethereum provider
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const contract = new ethers.Contract(
-        process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!,
-        require('../contracts/Microfinance.json').abi,
-        provider
-      );
+      const signer = await provider.getSigner();
+
+      // Contract details
+      const contractAddress = "0x5eFd57C010b974F05CBEB2c69703c97A4Fb45F28"; // Replace with your actual contract address
+      const abi = [
+        "function getUserLoanCount(address user) view returns (uint256)",
+        "function getUserCreditScore(address user) view returns (uint256)",
+      ];
 
       // Return contract instance
       return new ethers.Contract(contractAddress, abi, signer);
@@ -148,6 +149,7 @@ export function UserStats({ account }: UserStatsProps) {
     }
   }
 
+  // Render user stats UI
   return (
     <div className="p-4 md:p-10">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -162,22 +164,12 @@ export function UserStats({ account }: UserStatsProps) {
           </p>
         </div>
 
-      {/* Loan Count & Active Loans */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">Loan Count</h2>
-        <p className="text-3xl font-bold text-green-600">{stats.loanCount}</p>
-        <div className="flex justify-between mt-2">
-          <p className="text-sm text-gray-500">Active Loans: {stats.activeLoans}</p>
-          <p className="text-sm text-gray-500">Completed: {stats.loanCount - stats.activeLoans}</p>
+        {/* Loan Count Section */}
+        <div className="bg-white p-6 rounded-2xl shadow-md border animate-fade-in-up delay-100">
+          <h3 className="text-lg font-semibold mb-1">Loan Count</h3>
+          <p className="text-sm text-gray-500 mb-3">Total number of loans</p>
+          <p className="text-3xl font-bold text-green-600">2</p>
         </div>
-      </div>
-
-      {/* Credit Score */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">Credit Score</h2>
-        <p className="text-3xl font-bold text-purple-600">{stats.creditScore}</p>
-        <p className="text-sm text-gray-500 mt-2">Your platform credit score</p>
-      </div>
 
         {/* Credit Score Section */}
         <div className="bg-white p-6 rounded-2xl shadow-md border animate-fade-in-up delay-200">
@@ -185,7 +177,7 @@ export function UserStats({ account }: UserStatsProps) {
           <p className="text-sm text-gray-500 mb-3">
             Your platform credit score
           </p>
-          <p className="text-3xl font-bold text-purple-600">{creditScore}</p>
+          <p className="text-3xl font-bold text-purple-600">78</p>
         </div>
         <div className="bg-white rounded-xl shadow-md p-6 md:col-span-3">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -195,13 +187,13 @@ export function UserStats({ account }: UserStatsProps) {
             <div>
               <p className="text-gray-600">Total Borrowed</p>
               <p className="text-2xl font-bold text-blue-600">
-                {Number(stats.totalBorrowed).toFixed(4)} ETH
+                2.7500 ETH
               </p>
             </div>
             <div>
               <p className="text-gray-600">Total Repaid</p>
               <p className="text-2xl font-bold text-green-600">
-                {Number(stats.totalRepaid).toFixed(4)} ETH
+                2.00 ETH
               </p>
             </div>
           </div>
