@@ -1,8 +1,8 @@
 import { ethers } from "ethers"
-import MicrofinanceABI from "@/contracts/Microfinance.json"
+import MicrofinanceABI from "../contracts/Microfinance.json"
 
 // Contract address will be updated after deployment
-const CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000"
+const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
 
 export async function getMicrofinanceContract() {
   if (!window.ethereum) {

@@ -4,7 +4,6 @@ import { useSearchParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import DashboardPage from "../components/dashboard-page"
 import "./page.css"
-import { LoanRequestForm } from "../components/loan-request-form"
 
 export default function Home() {
   const searchParams = useSearchParams()
@@ -28,7 +27,7 @@ export default function Home() {
     <div className="relative min-h-screen">
       <DashboardPage />
 
-      <button
+      {/* <button
         onClick={openPopup}
         className="fixed bottom-5 right-5 bg-blue-600 text-white px-4 py-2 rounded shadow-md"
       >
@@ -44,11 +43,9 @@ export default function Home() {
             >
               &times;
             </button>
-            <LoanRequestForm account={"0x5eFd57C010b974F05CBEB2c69703c97A4Fb45F28"} />
           </div>
         </div>
-      )}
+      )} */}
     </div>
   )
 }
-

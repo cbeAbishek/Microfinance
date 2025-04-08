@@ -10,7 +10,7 @@ declare global {
 
 export default function LoanRequestForm() {
   const [amount, setAmount] = useState("");
-  const [duration, setDuration] = useState("30"); // Default duration set to 30 days
+  const [duration, setDuration] = useState("30");
   const [purpose, setPurpose] = useState("");
   const [message, setMessage] = useState<{
     type: "error" | "success";
@@ -21,7 +21,7 @@ export default function LoanRequestForm() {
   async function getMicrofinanceContract() {
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
-    const contractAddress = "0x5eFd57C010b974F05CBEB2c69703c97A4Fb45F28"; // Replace with your contract address
+    const contractAddress = "0x5eFd57C010b974F05CBEB2c69703c97A4Fb45F28";
     const abi = [
       "function requestLoan(uint256 amount, uint256 duration, string calldata purpose) external",
     ];
@@ -30,7 +30,7 @@ export default function LoanRequestForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setMessage(null); // Clear any previous messages
+    setMessage(null);
 
     if (!amount || !purpose || !duration) {
       setMessage({ type: "error", text: "Please fill out all fields." });
@@ -59,27 +59,21 @@ export default function LoanRequestForm() {
 
     try {
       setIsSubmitting(true);
-
-      const amountInWei = ethers.parseEther(amount); // Convert ETH to Wei
+      const amountInWei = ethers.parseEther(amount);
       const durationInDays = parseInt(duration);
 
       const contract = await getMicrofinanceContract();
-      const tx = await contract.requestLoan(
-        amountInWei,
-        durationInDays,
-        purpose
-      );
+      const tx = await contract.requestLoan(amountInWei, durationInDays, purpose);
 
       setMessage({ type: "success", text: "Submitting your loan request..." });
 
-      await tx.wait(); // Wait for the transaction to be mined
+      await tx.wait();
 
       setMessage({
         type: "success",
         text: "Loan request confirmed on the blockchain.",
       });
 
-      // Reset form fields
       setAmount("");
       setPurpose("");
       setDuration("30");
@@ -90,19 +84,21 @@ export default function LoanRequestForm() {
         text: "Failed to submit loan request. Please try again.",
       });
     } finally {
-      setIsSubmitting(false); // Ensure the submit button is re-enabled
+      setIsSubmitting(false);
     }
   }
 
   return (
-    <div className="loan-form">
-      <form onSubmit={handleSubmit}>
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
+      <h2 className="text-2xl font-semibold mb-6 text-center">Request a Loan</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="number"
           placeholder="Amount (ETH)"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           disabled={isSubmitting}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
           type="number"
@@ -110,21 +106,32 @@ export default function LoanRequestForm() {
           value={duration}
           onChange={(e) => setDuration(e.target.value)}
           disabled={isSubmitting}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <textarea
           placeholder="Loan purpose"
           value={purpose}
           onChange={(e) => setPurpose(e.target.value)}
           disabled={isSubmitting}
+          rows={4}
+          className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <button type="submit" disabled={isSubmitting}>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`w-full py-3 px-6 rounded-lg text-white font-semibold transition ${
+            isSubmitting
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
           {isSubmitting ? "Submitting..." : "Request Loan"}
         </button>
       </form>
       {message && (
         <p
-          className={`message ${
-            message.type === "error" ? "text-red-500" : "text-green-500"
+          className={`mt-4 text-center font-medium ${
+            message.type === "error" ? "text-red-500" : "text-green-600"
           }`}
         >
           {message.text}
