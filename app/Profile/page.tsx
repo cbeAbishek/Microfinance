@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import {UserStats} from "../../components/user-stats"
 import Navbar from "../../components/Navbar"
 import "./page.css"
+import LoansList from "../../components/loans-list";
 
 declare global {
   interface Window {
@@ -64,6 +65,7 @@ export default function Profile() {
       <br />
       <br />
       <UserStats account={getAccount()} />
+      <LoansList account={getAccount()} />
     </div>
   )
 }

@@ -1,37 +1,79 @@
-const hre = require("hardhat")
+const { ethers, run } = require("hardhat");
 
-async function main() {
-  console.log("Deploying Microfinance contract...")
+async function deployMicrofinance() {
+  console.log("Deploying Microfinance contract...");
 
-  const Microfinance = await hre.ethers.getContractFactory("Microfinance")
-  const microfinance = await Microfinance.deploy()
+  const Microfinance = await ethers.getContractFactory("Microfinance");
+  const microfinance = await Microfinance.deploy();
 
-  await microfinance.waitForDeployment()
+  await microfinance.waitForDeployment();
+  const address = await microfinance.getAddress();
 
-  const address = await microfinance.getAddress()
-  console.log(`Microfinance deployed to: ${address}`)
+  console.log(`Microfinance deployed to: ${address}`);
 
-  console.log("Waiting for block confirmations...")
-  // Wait for 5 confirmations for Etherscan verification
-  await microfinance.deploymentTransaction().wait(5)
+  console.log("Waiting for block confirmations...");
+  await microfinance.deploymentTransaction().wait(5);
 
-  console.log("Verifying contract on Etherscan...")
-  // Verify the contract on Etherscan
+  console.log("Verifying Microfinance contract on Etherscan...");
   try {
-    await hre.run("verify:verify", {
-      address: address,
+    await run("verify:verify", {
+      address,
       constructorArguments: [],
-    })
-    console.log("Contract verified on Etherscan")
+    });
+    console.log("Microfinance contract verified.");
   } catch (error) {
-    console.error("Error verifying contract:", error)
+    console.error("Microfinance verification failed:", error);
   }
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error)
-    process.exit(1)
-  })
+// If you need defender functionality, use require instead of import
+// const defender = require("@openzeppelin/hardhat-defender");
 
+async function deployBoxUpgradeable() {
+  console.log("Deploying Box upgradeable contract...");
+
+  try {
+    const Box = await ethers.getContractFactory("Box");
+
+    // Comment out or fix defender functionality
+    /*
+    let upgradeApprovalProcess;
+    try {
+      upgradeApprovalProcess = await defender.getUpgradeApprovalProcess();
+    } catch (error) {
+      console.error("Failed to fetch upgrade approval process:", error);
+      throw new Error("Upgrade approval process could not be retrieved.");
+    }
+
+    if (!upgradeApprovalProcess || !upgradeApprovalProcess.address) {
+      throw new Error(
+        `Upgrade approval process with id ${upgradeApprovalProcess?.approvalProcessId} has no assigned address`
+      );
+    }
+
+    const boxProxy = await defender.deployProxy(Box, [5, upgradeApprovalProcess.address], {
+      initializer: "initialize",
+    });
+    */
+
+    // For now, deploy without proxy
+    const box = await Box.deploy();
+    await box.waitForDeployment();
+    const boxAddress = await box.getAddress();
+
+    console.log(`Box contract deployed to: ${boxAddress}`);
+  } catch (error) {
+    console.error("Error deploying Box:", error);
+  }
+}
+
+async function main() {
+  await deployMicrofinance();
+  // Uncomment if you fix the Box deployment
+  // await deployBoxUpgradeable();
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

@@ -32,6 +32,7 @@ contract Microfinance is Ownable, Pausable {
     // Events
     event LoanRequested(uint256 indexed loanId, address indexed borrower, uint256 amount, uint256 duration);
     event LoanApproved(uint256 indexed loanId, address indexed borrower, uint256 amount);
+    event LoanRejected(uint256 indexed loanId, address indexed borrower);
     event LoanRepaid(uint256 indexed loanId, address indexed borrower);
     
     constructor() Ownable(msg.sender) {}
@@ -60,7 +61,7 @@ contract Microfinance is Ownable, Pausable {
             duration: _duration,
             purpose: _purpose,
             status: LoanStatus.Pending,
-            dueDate: 0
+            dueDate: block.timestamp + (_duration * 1 days)
         }));
         
         userLoans[msg.sender].push(loanId);
@@ -88,9 +89,28 @@ contract Microfinance is Ownable, Pausable {
         loan.dueDate = block.timestamp + (loan.duration * 1 days);
         
         // In a real implementation, this would transfer funds to the borrower
-        // payable(loan.borrower).transfer(loan.amount);
+        payable(loan.borrower).transfer(loan.amount);
         
         emit LoanApproved(_loanId, loan.borrower, loan.amount);
+    }
+
+    /**
+     * @dev Reject a pending loan (only owner)
+     * @param _loanId ID of the loan to reject
+     */
+    function rejectLoan(uint256 _loanId) 
+        external 
+        onlyOwner 
+        whenNotPaused 
+    {
+        require(_loanId < loans.length, "Invalid loan ID");
+        Loan storage loan = loans[_loanId];
+        
+        require(loan.status == LoanStatus.Pending, "Loan is not pending");
+        
+        loan.status = LoanStatus.Rejected;
+        
+        emit LoanRejected(_loanId, loan.borrower);
     }
     
     /**
@@ -133,11 +153,31 @@ contract Microfinance is Ownable, Pausable {
     /**
      * @dev Get a specific loan by ID
      * @param _loanId ID of the loan to retrieve
-     * @return The loan details
+     * @return borrower The address of the borrower
+     * @return amount The amount of the loan
+     * @return duration The duration of the loan in days
+     * @return purpose The purpose of the loan
+     * @return status The status of the loan
+     * @return dueDate The due date of the loan
      */
-    function getLoan(uint256 _loanId) external view returns (Loan memory) {
+    function getLoan(uint256 _loanId) external view returns (
+        address borrower,
+        uint256 amount,
+        uint256 duration,
+        string memory purpose,
+        LoanStatus status,
+        uint256 dueDate
+    ) {
         require(_loanId < loans.length, "Invalid loan ID");
-        return loans[_loanId];
+        Loan storage loan = loans[_loanId];
+        return (
+            loan.borrower,
+            loan.amount,
+            loan.duration,
+            loan.purpose,
+            loan.status,
+            loan.dueDate
+        );
     }
     
     /**
